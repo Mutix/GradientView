@@ -15,7 +15,7 @@ open class GradientView: UIView {
 	// MARK: - Types
 
 	/// The mode of the gradient.
-	public enum Type {
+	public enum GradientType {
 		/// A linear gradient.
 		case linear
 
@@ -74,7 +74,7 @@ open class GradientView: UIView {
 
 	/// The mode of the gradient. The default is `.Linear`.
 	@IBInspectable
-	open var mode: Type = .linear {
+	open var mode: GradientType = .linear {
 		didSet {
 			setNeedsDisplay()
 		}
@@ -207,12 +207,12 @@ open class GradientView: UIView {
 			let colorSpace = CGColorSpaceCreateDeviceRGB()
 			let colorSpaceModel = colorSpace.model
 
-			let gradientColors: NSArray = colors.map { (color: UIColor) -> AnyObject! in
+			let gradientColors = colors.map { (color: UIColor) -> AnyObject! in
 				let cgColor = color.cgColor
 				let cgColorSpace = cgColor.colorSpace
 
 				// The color's color space is RGB, simply add it.
-				if cgColorSpace.model.rawValue == colorSpaceModel.rawValue {
+				if let cgColorSpace = cgColorSpace, cgColorSpace.model.rawValue == colorSpaceModel.rawValue {
 					return cgColor as AnyObject!
 				}
 
@@ -227,9 +227,9 @@ open class GradientView: UIView {
 
 			// TODO: This is ugly. Surely there is a way to make this more concise.
 			if let locations = locations {
-				gradient = CGGradient(colorsSpace: colorSpace, colors: gradientColors, locations: locations)
+				gradient = CGGradient(colorsSpace: colorSpace, colors: gradientColors as CFArray, locations: locations)
 			} else {
-				gradient = CGGradient(colorsSpace: colorSpace, colors: gradientColors, locations: nil)
+				gradient = CGGradient(colorsSpace: colorSpace, colors: gradientColors as CFArray, locations: nil)
 			}
 		}
 	}
